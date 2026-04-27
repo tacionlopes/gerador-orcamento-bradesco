@@ -1,0 +1,1186 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Orçamento Banco Bradesco</title>
+  <style>
+    :root {
+      --paper: #ffffff;
+      --canvas: #f2efe9;
+      --ink: #131313;
+      --muted: #6e6e6e;
+      --line: #e6e6e6;
+      --accent: #cb2324;
+      --accent-dark: #971819;
+      --danger: #b91c1c;
+      --panel: #f8f5ef;
+      --shadow: 0 28px 60px rgba(29, 24, 16, 0.12);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: Arial, Helvetica, sans-serif;
+      color: var(--ink);
+      background:
+        linear-gradient(180deg, rgba(255, 255, 255, 0.8), rgba(242, 239, 233, 0.94)),
+        radial-gradient(circle at top left, rgba(203, 35, 36, 0.07), transparent 22%);
+      padding: 24px;
+    }
+
+    .page-shell {
+      max-width: 1320px;
+      margin: 0 auto;
+    }
+
+    .access-gate {
+      min-height: calc(100vh - 48px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+
+    .gate-card {
+      width: min(100%, 420px);
+      background: #fff;
+      border: 1px solid rgba(0, 0, 0, 0.08);
+      border-radius: 24px;
+      padding: 28px;
+      box-shadow: var(--shadow);
+    }
+
+    .gate-card h1 {
+      margin: 0 0 10px;
+      font-size: 1.8rem;
+      letter-spacing: 0.02em;
+    }
+
+    .gate-card p {
+      margin: 0 0 18px;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+
+    .gate-error {
+      min-height: 24px;
+      margin-top: 12px;
+      color: var(--danger);
+      font-weight: 700;
+    }
+
+    .app-shell[hidden],
+    .access-gate[hidden] {
+      display: none !important;
+    }
+
+    .heading {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+
+    .heading h1 {
+      margin: 0;
+      font-size: clamp(1.8rem, 3vw, 2.8rem);
+      letter-spacing: 0.04em;
+    }
+
+    .heading p {
+      margin: 6px 0 0;
+      color: var(--muted);
+      line-height: 1.5;
+      max-width: 720px;
+    }
+
+    .data-count {
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: var(--accent-dark);
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: 360px minmax(0, 1fr);
+      gap: 28px;
+      align-items: start;
+    }
+
+    .controls {
+      position: sticky;
+      top: 24px;
+      background: var(--panel);
+      border: 1px solid rgba(0, 0, 0, 0.06);
+      border-radius: 24px;
+      padding: 24px;
+      box-shadow: var(--shadow);
+    }
+
+    .controls h2 {
+      margin: 0 0 10px;
+      font-size: 1.05rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    .controls-copy {
+      margin: 0 0 20px;
+      color: var(--muted);
+      line-height: 1.55;
+      font-size: 0.95rem;
+    }
+
+    .field {
+      display: grid;
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+
+    label {
+      font-size: 0.84rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    select,
+    input {
+      width: 100%;
+      border: 1px solid #d5d2cb;
+      border-radius: 14px;
+      background: #fff;
+      padding: 13px 14px;
+      font-size: 0.98rem;
+      color: var(--ink);
+    }
+
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 20px;
+    }
+
+    button {
+      border: 0;
+      border-radius: 999px;
+      padding: 12px 16px;
+      font-size: 0.92rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: transform 0.16s ease, opacity 0.16s ease, background 0.16s ease;
+    }
+
+    button:hover {
+      transform: translateY(-1px);
+    }
+
+    button:disabled {
+      opacity: 0.55;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .primary {
+      background: linear-gradient(135deg, var(--accent) 0%, var(--accent-dark) 100%);
+      color: #fff;
+    }
+
+    .secondary {
+      background: #e9e3d6;
+      color: var(--ink);
+    }
+
+    .ghost {
+      background: #fff;
+      color: var(--accent-dark);
+      border: 1px solid rgba(151, 24, 25, 0.18);
+    }
+
+    .error {
+      min-height: 24px;
+      margin-top: 16px;
+      color: var(--danger);
+      font-weight: 700;
+    }
+
+    .paper-area {
+      display: grid;
+      gap: 18px;
+      justify-items: center;
+    }
+
+    .paper-toolbar {
+      width: min(100%, 840px);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .paper-toolbar p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 0.92rem;
+    }
+
+    .paper {
+      width: min(100%, 840px);
+      min-height: 1188px;
+      background: var(--paper);
+      box-shadow: var(--shadow);
+      padding: 46px 44px 36px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .paper::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      background:
+        linear-gradient(180deg, rgba(255, 255, 255, 0.12), transparent 16%),
+        linear-gradient(90deg, rgba(203, 35, 36, 0.03), transparent 24%);
+    }
+
+    .brand-row,
+    .meta-grid,
+    .footer-row {
+      position: relative;
+      z-index: 1;
+    }
+
+    .brand-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 24px;
+      margin-bottom: 92px;
+    }
+
+    .brand-mark {
+      font-weight: 800;
+      font-size: 1.9rem;
+      letter-spacing: -0.04em;
+      line-height: 1;
+    }
+
+    .brand-mark span {
+      color: var(--accent);
+    }
+
+    .doc-title {
+      text-align: left;
+      min-width: 240px;
+    }
+
+    .doc-title h2 {
+      margin: 0;
+      font-size: 2rem;
+      letter-spacing: -0.02em;
+    }
+
+    .doc-title p {
+      margin: 10px 0 0;
+      font-size: 0.88rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+    }
+
+    .meta-grid {
+      display: grid;
+      justify-content: end;
+      margin-bottom: 78px;
+    }
+
+    .meta-table {
+      border-collapse: collapse;
+      font-size: 0.95rem;
+    }
+
+    .meta-table td {
+      padding: 6px 0 6px 12px;
+      vertical-align: top;
+    }
+
+    .meta-table td:first-child {
+      padding-left: 0;
+      min-width: 96px;
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+
+    .items-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 84px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .items-table thead th {
+      background: var(--accent);
+      color: #fff;
+      font-size: 0.82rem;
+      padding: 10px 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      border: 1px solid rgba(255, 255, 255, 0.75);
+    }
+
+    .items-table tbody td {
+      padding: 10px 12px;
+      border: 1px solid var(--line);
+      font-size: 0.95rem;
+    }
+
+    .items-table .item-cell strong {
+      display: block;
+      margin-bottom: 4px;
+      font-size: 1rem;
+    }
+
+    .items-table .item-cell small {
+      display: block;
+      color: var(--muted);
+      line-height: 1.4;
+    }
+
+    .items-table .right {
+      text-align: right;
+      white-space: nowrap;
+    }
+
+    .items-table .center {
+      text-align: center;
+      white-space: nowrap;
+    }
+
+    .items-table tfoot td {
+      background: var(--accent);
+      color: #fff;
+      padding: 10px 12px;
+      font-size: 0.94rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      border: 1px solid rgba(255, 255, 255, 0.7);
+    }
+
+    .payment-note {
+      margin: 0 0 110px;
+      font-size: 0.92rem;
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+
+    .footer-row {
+      margin-top: auto;
+      font-size: 0.8rem;
+      color: var(--muted);
+      display: grid;
+      gap: 14px;
+    }
+
+    .signature {
+      color: var(--ink);
+      font-size: 0.82rem;
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+
+    .signature .mini-brand {
+      display: inline-block;
+      margin-top: 6px;
+      font-size: 1rem;
+      font-weight: 800;
+      letter-spacing: -0.04em;
+    }
+
+    .signature .mini-brand span {
+      color: var(--accent);
+    }
+
+    .disclaimer {
+      font-size: 0.72rem;
+      text-align: center;
+      line-height: 1.45;
+    }
+
+    .placeholder {
+      color: var(--muted);
+      line-height: 1.7;
+      font-size: 0.98rem;
+      margin-top: 120px;
+      max-width: 420px;
+    }
+
+    @media (max-width: 1080px) {
+      .layout {
+        grid-template-columns: 1fr;
+      }
+
+      .controls {
+        position: static;
+      }
+
+      .paper {
+        min-height: auto;
+      }
+    }
+
+    @media (max-width: 760px) {
+      body {
+        padding: 14px;
+      }
+
+      .paper {
+        padding: 28px 20px 24px;
+      }
+
+      .brand-row,
+      .paper-toolbar {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .meta-grid {
+        justify-content: start;
+      }
+
+      .items-table {
+        display: block;
+        overflow-x: auto;
+      }
+    }
+  </style>
+</head>
+<body>
+  <section class="access-gate" id="accessGate">
+    <div class="gate-card">
+      <h1>Acesso Interno</h1>
+      <p>
+        Digite a senha para liberar o gerador de orçamento.
+      </p>
+
+      <div class="field">
+        <label for="accessPassword">Senha</label>
+        <input id="accessPassword" type="password" placeholder="Digite a senha">
+      </div>
+
+      <div class="actions">
+        <button type="button" class="primary" id="accessButton">Entrar</button>
+      </div>
+
+      <div class="gate-error" id="accessError" aria-live="polite"></div>
+    </div>
+  </section>
+
+  <main class="page-shell app-shell" id="appShell" hidden>
+    <section class="heading">
+      <div>
+        <h1>Gerador de Orçamento</h1>
+        <p>
+          Layout redesenhado com base no orçamento de referência, preservando os dados reais da aba
+          <strong>ORCAMENTO</strong> da planilha.
+        </p>
+      </div>
+      <div class="data-count">188 itens disponíveis</div>
+    </section>
+
+    <div class="layout">
+      <aside class="controls">
+        <h2>Montar orçamento</h2>
+        <p class="controls-copy">
+          Escolha a categoria, selecione o material e informe a quantidade. O resultado aparece no modelo
+          de folha ao lado e também pode ser exportado em PDF.
+        </p>
+
+        <div class="field">
+          <label for="categoria">Categoria</label>
+          <select id="categoria">
+            <option value="">Selecione uma categoria</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label for="material">Material</label>
+          <select id="material" disabled>
+            <option value="">Selecione um material</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label for="quantidade">Quantidade</label>
+          <input id="quantidade" type="number" min="1" step="1" placeholder="Digite a quantidade">
+        </div>
+
+        <div class="actions">
+          <button type="button" class="primary" id="gerar">Gerar Orçamento</button>
+          <button type="button" class="ghost" id="pdf" disabled>Gerar PDF</button>
+          <button type="button" class="secondary" id="limpar">Limpar</button>
+        </div>
+
+        <div class="error" id="erro" aria-live="polite"></div>
+      </aside>
+
+      <section class="paper-area">
+        <div class="paper-toolbar">
+          <p>Prévia em formato de orçamento para produção gráfica.</p>
+          <p id="statusPreview">Aguardando seleção.</p>
+        </div>
+
+        <article class="paper" id="previewPaper">
+          <div class="brand-row">
+            <div class="brand-mark">ALMAP<span>BBDO</span></div>
+            <div class="doc-title">
+              <h2>ORÇAMENTO</h2>
+              <p>PRODUÇÃO GRÁFICA</p>
+            </div>
+          </div>
+
+          <div id="resultado">
+            <p class="placeholder">
+              Selecione a categoria, escolha o material, informe a quantidade e clique em
+              <strong>Gerar Orçamento</strong> para montar a folha.
+            </p>
+          </div>
+        </article>
+      </section>
+    </div>
+  </main>
+
+  <script>
+    const ACCESS_PASSWORD = "talauro01@";
+    const ACCESS_STORAGE_KEY = "gerador-orcamento-bradesco-auth";
+    const EMBEDDED_ROWS = [
+      ["BANCO BRADESCO","Advertising - Anúncio Revista","Página Dupla",4933.2,0.5],
+      ["BANCO BRADESCO","Advertising - Anúncio Revista","1 Página",3446.11,0.5],
+      ["BANCO BRADESCO","Advertising - Anúncio Revista","2/3 Página",3103.82,0.5],
+      ["BANCO BRADESCO","Advertising - Anúncio Revista","1/2 Página",2793.59,0.5],
+      ["BANCO BRADESCO","Advertising - Anúncio Revista","1/3 Página",2508.11,0.5],
+      ["BANCO BRADESCO","Advertising - Anúncio Revista","Valor mínimo",2040.57,0.5],
+      ["BANCO BRADESCO","Advertising - Anúncio Jornal","Página Dupla",5923.64,0.5],
+      ["BANCO BRADESCO","Advertising - Anúncio Jornal","1 Página",4142.32,0.5],
+      ["BANCO BRADESCO","Advertising - Anúncio Jornal","Rouba Página",3255.31,0.5],
+      ["BANCO BRADESCO","Advertising - Anúncio Jornal","1/2 Página",3218.89,0.5],
+      ["BANCO BRADESCO","Advertising - Anúncio Jornal","1/3 Página",2927.59,0.5],
+      ["BANCO BRADESCO","Advertising - Anúncio Jornal","1/4 Página",2634.83,0.5],
+      ["BANCO BRADESCO","Advertising - Anúncio Jornal","Valor mínimo",2266.33,0.5],
+      ["BANCO BRADESCO","Advertising - Publicidade Legal / Balanço","Página Dupla",null,0.5],
+      ["BANCO BRADESCO","Advertising - Publicidade Legal / Balanço","1 Página",null,0.5],
+      ["BANCO BRADESCO","Advertising - Publicidade Legal / Balanço","Rouba Página ou 1/2 Página",null,0.5],
+      ["BANCO BRADESCO","Advertising - Publicidade Legal / Balanço","Valor mínimo",null,0.5],
+      ["BANCO BRADESCO","Advertising - Exemplo de Cálculo","Criação e finalização",null,0.5],
+      ["BANCO BRADESCO","Advertising - Exemplo de Cálculo","Tratamento de imagem/sistema: 1 hora",null,0.5],
+      ["BANCO BRADESCO","Advertising - Exemplo de Cálculo","Vetorização de logotipo (1 logo)",null,0.5],
+      ["BANCO BRADESCO","Advertising - Exemplo de Cálculo","Print - 2 cópias formato A4",null,0.5],
+      ["BANCO BRADESCO","Branding - Papelaria","Bloco de anotações",2223.85,0.5],
+      ["BANCO BRADESCO","Branding - Papelaria","Cartão de visita / personalizado",1787.6,0.5],
+      ["BANCO BRADESCO","Branding - Papelaria","Cartão visita - alteração de nome / endereço",null,0.5],
+      ["BANCO BRADESCO","Branding - Papelaria","Envelope simples",3775.56,0.5],
+      ["BANCO BRADESCO","Branding - Papelaria","Envelope saco / ofício",2422.78,0.5],
+      ["BANCO BRADESCO","Branding - Papelaria","Papel carta / ofício",2108.74,0.5],
+      ["BANCO BRADESCO","Branding - Papelaria","Papel embrulho / presente",3674.67,0.5],
+      ["BANCO BRADESCO","Branding - Papelaria","Pasta",4028.5,0.5],
+      ["BANCO BRADESCO","Branding - Marca / Logotipo","Marca / logotipo empresa / órgão público",19364.32,0.5],
+      ["BANCO BRADESCO","Branding - Marca / Logotipo","Marca / logotipo produto",15490.0,0.5],
+      ["BANCO BRADESCO","Branding - Marca / Logotipo","Marca / logotipo imobiliário",12390.54,0.5],
+      ["BANCO BRADESCO","Branding - Marca / Logotipo","Marca / logotipo eventos",15490.0,0.5],
+      ["BANCO BRADESCO","Branding - Marca / Logotipo","Marca / logotipo - Reformulação",14524.33,0.5],
+      ["BANCO BRADESCO","Branding - Marca / Logotipo","Manual de identidade visual (por lâmina)",null,0.5],
+      ["BANCO BRADESCO","Branding - Marca / Logotipo","Slogan",null,0.5],
+      ["BANCO BRADESCO","Branding - Marca / Logotipo","Selo comemorativo/ação de Governo Programa Governamental",6650.43,0.5],
+      ["BANCO BRADESCO","Branding - Marca / Logotipo","Ícones e símbolos",831.67,0.5],
+      ["BANCO BRADESCO","Branding - Materiais Especiais","House organ / jornal (4 páginas)",14805.43,0.5],
+      ["BANCO BRADESCO","Branding - Materiais Especiais","House organ / jornal (por página adicional)",2955.26,0.5],
+      ["BANCO BRADESCO","Branding - Materiais Especiais","Relatorio diretoria (Projeto Gráfico e Criativo)",null,0.5],
+      ["BANCO BRADESCO","Branding - Materiais Especiais","Relatorio diretoria (Finalização por página)",null,0.5],
+      ["BANCO BRADESCO","Branding - Materiais Especiais","Embalagem para relatório de diretoria",10616.51,0.5],
+      ["BANCO BRADESCO","Branding - Materiais Especiais","Revista/Livro - projeto editorial",null,0.5],
+      ["BANCO BRADESCO","Branding - Materiais Especiais","Revista/Livro - finalização (por página)",null,0.5],
+      ["BANCO BRADESCO","Branding - Materiais Especiais","Revista/Livro - capa (projeto editorial já existente)",3574.28,0.5],
+      ["BANCO BRADESCO","Branding - Materiais Especiais","Revista/Livro - miolo (por pág. projeto gráfico já existente)",2560.55,0.5],
+      ["BANCO BRADESCO","Branding - Materiais Especiais","Uniforme",10441.73,0.5],
+      ["BANCO BRADESCO","Branding - Materiais Especiais Continuação","Apresentação de PPT / Keynote / app apresentação - valor por slide",null,0.5],
+      ["BANCO BRADESCO","Branding - Embalagem","Berço",10131.49,0.5],
+      ["BANCO BRADESCO","Branding - Embalagem","Caixa de embarque",7136.91,0.5],
+      ["BANCO BRADESCO","Branding - Embalagem","Caixa de display de produto",17925.29,0.5],
+      ["BANCO BRADESCO","Branding - Embalagem","Cartela",6579.06,0.5],
+      ["BANCO BRADESCO","Branding - Embalagem","Cartela com saco",8771.11,0.5],
+      ["BANCO BRADESCO","Branding - Embalagem","Embalagem de produto",17925.29,0.5],
+      ["BANCO BRADESCO","Branding - Embalagem","Embalagem - adaptação",17925.29,0.5],
+      ["BANCO BRADESCO","Branding - Embalagem","Embalagem blister",10558.25,0.5],
+      ["BANCO BRADESCO","Branding - Embalagem","Embalagem promocional",17925.29,0.5],
+      ["BANCO BRADESCO","Branding - Embalagem","Luva",9636.28,0.5],
+      ["BANCO BRADESCO","Branding - Embalagem","Mock-up (sem custo de terceiros)",16886.8,0.5],
+      ["BANCO BRADESCO","Branding - Embalagem","Rótulo",6487.3,0.5],
+      ["BANCO BRADESCO","Branding - Embalagem","Vinheta de embalagem",5796.92,0.5],
+      ["BANCO BRADESCO","Branding - Materiais Especiais Continuação","Template para PPT - valor por template",4213.68,0.5],
+      ["BANCO BRADESCO","Branding - Materiais Especiais Continuação","Portfólio de produtos",4156.89,0.5],
+      ["BANCO BRADESCO","Branding - Materiais Especiais Continuação","Assinatura de e-mail",null,0.5],
+      ["BANCO BRADESCO","Branding - Materiais Especiais Continuação","Assinatura de e-mail - alteração de nome / cargo / telefone",null,0.5],
+      ["BANCO BRADESCO","Mídia Exterior - Mobiliário Urbano","Painel de abrigo de ônibus",4306.9,0.5],
+      ["BANCO BRADESCO","Mídia Exterior - Mobiliário Urbano","Painel de relógio de rua",4306.9,0.5],
+      ["BANCO BRADESCO","Mídia Exterior - Mobiliário Urbano","Testeira de abrigo de ônibus",4539.95,0.5],
+      ["BANCO BRADESCO","Mídia Indoor","Adesivação de balcão promocional",4076.32,0.5],
+      ["BANCO BRADESCO","Mídia Indoor","Adesivo de chão / de mesa / espelho banheiro",4076.32,0.5],
+      ["BANCO BRADESCO","Mídia Indoor","Adesivo de elevador / lateral de escada rolante",4076.32,0.5],
+      ["BANCO BRADESCO","Mídia Indoor","Adesivo de vitrine",5791.47,0.5],
+      ["BANCO BRADESCO","Mídia Indoor","Banner / cartaz Mall (avenida/corredor shopping)",5791.47,0.5],
+      ["BANCO BRADESCO","Mídia Indoor","Cancela de estacionamento",4455.08,0.5],
+      ["BANCO BRADESCO","Mídia Indoor","Encosto de cabeça",4133.5,0.5],
+      ["BANCO BRADESCO","Mídia Exterior","Busdoor - interno / lateral / traseira",5901.78,0.5],
+      ["BANCO BRADESCO","Mídia Exterior","Empena",7473.36,0.5],
+      ["BANCO BRADESCO","Mídia Exterior","Envelopamento de ônibus / vagão (metrô/trem)",8967.75,0.5],
+      ["BANCO BRADESCO","Mídia Exterior","Envelopamento de prédio / trio elétrico",8967.75,0.5],
+      ["BANCO BRADESCO","Mídia Exterior","Faixa de rua",2725.13,0.5],
+      ["BANCO BRADESCO","Mídia Exterior","Outdoor (simples/backlight /frontlight)",4898.24,0.5],
+      ["BANCO BRADESCO","Mídia Exterior","Painel de estação / plataforma (metrô/trem)",4306.9,0.5],
+      ["BANCO BRADESCO","Mídia Exterior","Painel banca de jornal (traseira/lateral)",4306.9,0.5],
+      ["BANCO BRADESCO","Mídia Exterior","Placa indicativa de rua",3762.17,0.5],
+      ["BANCO BRADESCO","Mídia Exterior","Placa governamental",4898.24,0.5],
+      ["BANCO BRADESCO","Mídia Exterior","Sanca / cartaz (ônibus/metrô/trem)",4539.95,0.5],
+      ["BANCO BRADESCO","Mídia Exterior","Vídeos digitais para DOOH e OOH 7”/10”/15”",null,0.5],
+      ["BANCO BRADESCO","Mídia Exterior","Vídeos digitais para DOOH e OOH 30”/45”/60”",null,0.5],
+      ["BANCO BRADESCO","PDV, Sinalização e Materiais de Apoio","Adesivo perfurado (vidro traseiro)",5901.78,0.5],
+      ["BANCO BRADESCO","PDV, Sinalização e Materiais de Apoio","Backdrop / fundo de palco",4153.97,0.5],
+      ["BANCO BRADESCO","PDV, Sinalização e Materiais de Apoio","Balcão promocional - comunicação visual",6579.06,0.5],
+      ["BANCO BRADESCO","PDV, Sinalização e Materiais de Apoio","Bandeirola (por modelo)",3759.26,0.5],
+      ["BANCO BRADESCO","PDV, Sinalização e Materiais de Apoio","Banner",4021.42,0.5],
+      ["BANCO BRADESCO","PDV, Sinalização e Materiais de Apoio","Caixa / dispenser / urna",2005.62,0.5],
+      ["BANCO BRADESCO","PDV, Sinalização e Materiais de Apoio","Capa de antena",6579.06,0.5],
+      ["BANCO BRADESCO","PDV, Sinalização e Materiais de Apoio","Cavalete",4021.42,0.5],
+      ["BANCO BRADESCO","PDV, Sinalização e Materiais de Apoio","Cubo / Totem",6579.06,0.5],
+      ["BANCO BRADESCO","PDV, Sinalização e Materiais de Apoio","Displays (de chão/de vitrine/de ponta de gôndola)",6579.06,null],
+      ["BANCO BRADESCO","PDV, Sinalização e Materiais de Apoio","Envelopamento de frota da empresa",8967.75,null],
+      ["BANCO BRADESCO","PDV, Sinalização e Materiais de Apoio","Envelopamento / lona de caminhão",8967.75,null],
+      ["BANCO BRADESCO","PDV, Sinalização e Materiais de Apoio","Envelopamento de veículo individual",6277.08,null],
+      ["BANCO BRADESCO","PDV, Sinalização e Materiais de Apoio","Faixa de gôndola",4213.68,null],
+      ["BANCO BRADESCO","PDV, Sinalização e Materiais de Apoio","Forração de gôndola / bandô",2005.62,null],
+      ["BANCO BRADESCO","PDV, Sinalização e Materiais de Apoio","Infláveis (Balão/blimp/réplicas/roof etc)",2461.5,null],
+      ["BANCO BRADESCO","PDV, Sinalização e Materiais de Apoio","Móbile",4021.42,null],
+      ["BANCO BRADESCO","PDV, Sinalização e Materiais de Apoio","Painel / placa de PDV",4156.88,null],
+      ["BANCO BRADESCO","PDV, Sinalização e Materiais de Apoio","Placa de identificação",830.21,null],
+      ["BANCO BRADESCO","PDV, Sinalização e Materiais de Apoio","Placa de inauguração",4079.19,null],
+      ["BANCO BRADESCO","PDV, Sinalização e Materiais de Apoio","Placa ou adesivo para púlpito",2005.62,null],
+      ["BANCO BRADESCO","PDV, Sinalização e Materiais de Apoio","Pórtico",3721.39,null],
+      ["BANCO BRADESCO","PDV, Sinalização e Materiais de Apoio","Saia de mesa ou de palco",3759.26,null],
+      ["BANCO BRADESCO","PDV, Sinalização e Materiais de Apoio","Tapume",2696.01,null],
+      ["BANCO BRADESCO","PDV, Sinalização e Materiais de Apoio","Traseira de PDV ou de palco",3759.26,null],
+      ["BANCO BRADESCO","PDV, Sinalização e Materiais de Apoio","Vending machine - comunicação visual",2696.01,null],
+      ["BANCO BRADESCO","PDV, Sinalização e Materiais de Apoio","Wind Banner (por modelo)",3759.26,null],
+      ["BANCO BRADESCO","PDV, Sinalização e Materiais de Apoio","Wobbler / stopper",2828.54,null],
+      ["BANCO BRADESCO","Materiais Diferenciados","Fachada de loja",null,null],
+      ["BANCO BRADESCO","Materiais Diferenciados","Espaço instagramável",null,null],
+      ["BANCO BRADESCO","Brindes e Materiais de Apoio","Bandeirinha / estandarte",2446.93,null],
+      ["BANCO BRADESCO","Brindes e Materiais de Apoio","Baralho / jogo americano",2846.03,null],
+      ["BANCO BRADESCO","Brindes e Materiais de Apoio","Boné / óculos / pulseira",2212.44,null],
+      ["BANCO BRADESCO","Brindes e Materiais de Apoio","Botton / imã de geladeira / caixa fósforo / balão",2007.08,null],
+      ["BANCO BRADESCO","Brindes e Materiais de Apoio","Camiseta / colete / avental",2446.94,null],
+      ["BANCO BRADESCO","Brindes e Materiais de Apoio","Chaveiro / pendrive / squeezer",2007.08,null],
+      ["BANCO BRADESCO","Brindes e Materiais de Apoio","Copo / bolacha de chopp / guardanapo",2007.08,null],
+      ["BANCO BRADESCO","Brindes e Materiais de Apoio","Gargaleira",1699.75,null],
+      ["BANCO BRADESCO","Brindes e Materiais de Apoio","Guarda-sol / toalha",2446.94,null],
+      ["BANCO BRADESCO","Brindes e Materiais de Apoio","Lápis / caneta / régua / mouse pad",1875.99,null],
+      ["BANCO BRADESCO","Brindes e Materiais de Apoio","Medalha / troféu / placa de homenagem",2007.08,null],
+      ["BANCO BRADESCO","Brindes e Materiais de Apoio","Sacola / bolsa",2009.99,null],
+      ["BANCO BRADESCO","Brindes e Materiais de Apoio","Viseira / bandana / cachecol / gorro / leque",1814.81,null],
+      ["BANCO BRADESCO","Brindes e Materiais de Apoio","Outros brindes e materiais de apoio - valor mín.",1875.99,null],
+      ["BANCO BRADESCO","Brindes e Materiais de Apoio","Outros brindes e materiais de apoio - valor máx.",2846.03,null],
+      ["BANCO BRADESCO","Materiais Gráficos","Adesivos",1339.99,null],
+      ["BANCO BRADESCO","Materiais Gráficos","Agenda (capa + miolo)",2381.4,null],
+      ["BANCO BRADESCO","Materiais Gráficos","Book - capa",3572.83,null],
+      ["BANCO BRADESCO","Materiais Gráficos","Book - miolo (por página)",2560.55,null],
+      ["BANCO BRADESCO","Materiais Gráficos","Bula",5536.2,null],
+      ["BANCO BRADESCO","Materiais Gráficos","Broadside (por lâmina, cada lado)",1832.29,null],
+      ["BANCO BRADESCO","Materiais Gráficos","Caderno (capa + miolo)",4818.14,null],
+      ["BANCO BRADESCO","Materiais Gráficos","Caixa de pizza",2005.62,null],
+      ["BANCO BRADESCO","Materiais Gráficos","Calendário simples",6992.71,null],
+      ["BANCO BRADESCO","Materiais Gráficos","Calendário (por lâmina, cada lado)",3495.63,null],
+      ["BANCO BRADESCO","Materiais Gráficos","Capa de catálogo / caderno / agenda / carnê",3770.91,null],
+      ["BANCO BRADESCO","Materiais Gráficos","CD - capa / label",2828.54,null],
+      ["BANCO BRADESCO","Materiais Gráficos","CD - encarte (por lâmina)",1605.08,null],
+      ["BANCO BRADESCO","Materiais Gráficos","Cardápio - capa",3770.91,null],
+      ["BANCO BRADESCO","Materiais Gráficos","Cardápio - miolo (por página)",3016.43,null],
+      ["BANCO BRADESCO","Materiais Gráficos","Carta / circular",1957.55,null],
+      ["BANCO BRADESCO","Materiais Gráficos","Cartão de natal / cartão-postal",3893.26,null],
+      ["BANCO BRADESCO","Materiais Gráficos","Cartaz / pôster",4567.62,null],
+      ["BANCO BRADESCO","Materiais Gráficos","Cartazete",4213.68,null],
+      ["BANCO BRADESCO","Materiais Gráficos","Cinta / faixa",1787.14,null],
+      ["BANCO BRADESCO","Materiais Gráficos","Convite com envelope",3709.74,null],
+      ["BANCO BRADESCO","Materiais Gráficos","Convite sem envelope",3507.28,null],
+      ["BANCO BRADESCO","Materiais Gráficos","Cupom / crachá / ficha de inscrição",3202.87,null],
+      ["BANCO BRADESCO","Materiais Gráficos","Diploma / certificado",2461.5,null],
+      ["BANCO BRADESCO","Materiais Gráficos","Display de mesa",4028.71,null],
+      ["BANCO BRADESCO","Materiais Gráficos","Encartes diversos (por página)",3721.39,null],
+      ["BANCO BRADESCO","Materiais Gráficos","Etiqueta / tag",1875.99,null],
+      ["BANCO BRADESCO","Materiais Gráficos","Flyer / ingresso / volante",3721.39,null],
+      ["BANCO BRADESCO","Materiais Gráficos","Folder / folheto / catálogo (por página)",2065.34,null],
+      ["BANCO BRADESCO","Materiais Gráficos","Folheto técnico (por página)",2589.67,null],
+      ["BANCO BRADESCO","Materiais Gráficos","Guia / cartilha (capa)",2860.59,null],
+      ["BANCO BRADESCO","Materiais Gráficos","Guia / cartilha - miolo (por página)",2588.22,null],
+      ["BANCO BRADESCO","Materiais Gráficos","Mala direta (por lâmina, cada lado)",3721.39,null],
+      ["BANCO BRADESCO","Materiais Gráficos Continuação","Marcador de página / risque rabisque",1621.1,null],
+      ["BANCO BRADESCO","Materiais Gráficos Continuação","Newsletter (por página)",2588.22,null],
+      ["BANCO BRADESCO","Materiais Gráficos Continuação","Raspadinha",2774.65,null],
+      ["BANCO BRADESCO","Materiais Gráficos Continuação","Rótulo promocional",4028.71,null],
+      ["BANCO BRADESCO","Materiais Gráficos Continuação","Saco de Pão",2009.99,null],
+      ["BANCO BRADESCO","Materiais Gráficos Continuação","Santinho",1880.36,null],
+      ["BANCO BRADESCO","Materiais Gráficos Continuação","Tabela de preços / tabloide de ofertas (por pág.)",2589.67,null],
+      ["BANCO BRADESCO","Materiais Gráficos Continuação","Testeira de computador",3721.39,null],
+      ["BANCO BRADESCO","Diversos","Mapa localização (mínimo)",2415.5,null],
+      ["BANCO BRADESCO","Diversos","Mapa localização (máximo)",3630.39,null],
+      ["BANCO BRADESCO","Diversos","Tabela / gráfico (mínimo)",1423.57,null],
+      ["BANCO BRADESCO","Diversos","Tabela / gráfico (máximo)",4841.0,null],
+      ["BANCO BRADESCO","Serviços Avulsos","Digitalização de imagem",null,null],
+      ["BANCO BRADESCO","Serviços Avulsos","Tratamento de imagem / sistema",null,null],
+      ["BANCO BRADESCO","Serviços Avulsos","Vetorização de logotipos",null,null],
+      ["BANCO BRADESCO","Print","Formato A3",null,null],
+      ["BANCO BRADESCO","Print","Formato A4",null,null],
+      ["BANCO BRADESCO","Prova Digital","Formato A3",null,null],
+      ["BANCO BRADESCO","Prova Digital","Formato A4",null,null],
+      ["BANCO BRADESCO","Ilustração","Ilustração 2D - Valor por Hora (não inclui personagem/mascote)",null,null],
+      ["BANCO BRADESCO","Ilustração","Ilustração 3D - Valor por Hora",null,null]
+    ];
+
+    const rows = EMBEDDED_ROWS.map(([Cliente, Categoria, Material, Finalizacao, Desconto]) => ({
+      Cliente,
+      Categoria,
+      Material,
+      Finalizacao,
+      Desconto
+    }));
+
+    const categoriaSelect = document.getElementById("categoria");
+    const materialSelect = document.getElementById("material");
+    const quantidadeInput = document.getElementById("quantidade");
+    const gerarButton = document.getElementById("gerar");
+    const limparButton = document.getElementById("limpar");
+    const pdfButton = document.getElementById("pdf");
+    const accessGate = document.getElementById("accessGate");
+    const appShell = document.getElementById("appShell");
+    const accessPasswordInput = document.getElementById("accessPassword");
+    const accessButton = document.getElementById("accessButton");
+    const accessError = document.getElementById("accessError");
+    const erro = document.getElementById("erro");
+    const resultado = document.getElementById("resultado");
+    const statusPreview = document.getElementById("statusPreview");
+
+    let materiaisAtuais = [];
+    let currentBudget = null;
+
+    function formatCurrency(value) {
+      return new Intl.NumberFormat("pt-BR", {
+        style: "currency",
+        currency: "BRL"
+      }).format(value);
+    }
+
+    function formatPercent(value) {
+      return new Intl.NumberFormat("pt-BR", {
+        style: "percent",
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 2
+      }).format(value);
+    }
+
+    function formatDate(date) {
+      return new Intl.DateTimeFormat("pt-BR").format(date);
+    }
+
+    function clearError() {
+      erro.textContent = "";
+    }
+
+    function clearAccessError() {
+      accessError.textContent = "";
+    }
+
+    function showAccessError(message) {
+      accessError.textContent = message;
+    }
+
+    function showError(message) {
+      erro.textContent = message;
+    }
+
+    function setPreviewStatus(text) {
+      statusPreview.textContent = text;
+    }
+
+    function escapeHtml(value) {
+      return String(value)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#39;");
+    }
+
+    function showEmptyResult() {
+      currentBudget = null;
+      pdfButton.disabled = true;
+      setPreviewStatus("Aguardando seleção.");
+      resultado.innerHTML = [
+        '<p class="placeholder">',
+        'Selecione a categoria, escolha o material, informe a quantidade e clique em ',
+        '<strong>Gerar Orçamento</strong> para montar a folha.',
+        "</p>"
+      ].join("");
+    }
+
+    function uniqueCategories(list) {
+      return [...new Set(list.map((item) => item.Categoria))];
+    }
+
+    function fillCategories() {
+      uniqueCategories(rows).forEach((category) => {
+        const option = document.createElement("option");
+        option.value = category;
+        option.textContent = category;
+        categoriaSelect.appendChild(option);
+      });
+    }
+
+    function resetMaterials() {
+      materialSelect.innerHTML = '<option value="">Selecione um material</option>';
+      materialSelect.disabled = true;
+      materiaisAtuais = [];
+    }
+
+    function fillMaterials(category) {
+      materiaisAtuais = rows.filter((item) => item.Categoria === category);
+      materialSelect.innerHTML = '<option value="">Selecione um material</option>';
+
+      materiaisAtuais.forEach((item, index) => {
+        const option = document.createElement("option");
+        option.value = String(index);
+        option.textContent = item.Material;
+        materialSelect.appendChild(option);
+      });
+
+      materialSelect.disabled = materiaisAtuais.length === 0;
+    }
+
+    function renderBudget(item, quantity) {
+      const valorBase = item.Finalizacao;
+      const desconto = item.Desconto;
+      const valorUnitarioComDesconto = valorBase * (1 - desconto);
+      const total = valorUnitarioComDesconto * quantity;
+      const dateText = formatDate(new Date());
+
+      currentBudget = {
+        dateText,
+        cliente: item.Cliente,
+        categoria: item.Categoria,
+        material: item.Material,
+        quantidade: quantity,
+        valorBase,
+        desconto,
+        valorUnitarioComDesconto,
+        total
+      };
+
+      pdfButton.disabled = false;
+      setPreviewStatus("Orçamento pronto para exportação.");
+
+      resultado.innerHTML = [
+        '<div class="meta-grid">',
+        '  <table class="meta-table">',
+        '    <tr><td>Data:</td><td>' + escapeHtml(dateText) + '</td></tr>',
+        '    <tr><td>Cliente:</td><td>' + escapeHtml(item.Cliente) + '</td></tr>',
+        '    <tr><td>Job:</td><td>' + escapeHtml(item.Material) + '</td></tr>',
+        '  </table>',
+        '</div>',
+        '<table class="items-table">',
+        '  <thead>',
+        '    <tr>',
+        '      <th>Itens</th>',
+        '      <th>Qtde</th>',
+        '      <th>Valor</th>',
+        '    </tr>',
+        '  </thead>',
+        '  <tbody>',
+        '    <tr>',
+        '      <td class="item-cell"><strong>' + escapeHtml(item.Material) + '</strong><small>' + escapeHtml(item.Categoria) + '</small></td>',
+        '      <td class="center">' + escapeHtml(String(quantity)) + '</td>',
+        '      <td class="right">' + escapeHtml(formatCurrency(valorUnitarioComDesconto)) + '</td>',
+        '    </tr>',
+        '  </tbody>',
+        '  <tfoot>',
+        '    <tr>',
+        '      <td colspan="2">Total</td>',
+        '      <td class="right">' + escapeHtml(formatCurrency(total)) + '</td>',
+        '    </tr>',
+        '  </tfoot>',
+        '</table>',
+        '<p class="payment-note">Cond. Pgto.: 60 dias</p>',
+        '<div class="footer-row">',
+        '  <div class="signature">Rose Ribeiro<br><span class="mini-brand">ALMAP<span>BBDO</span></span><br>Produção Gráfica</div>',
+        '  <div class="disclaimer">ALMAP BBDO, AVENIDA ROQUE PETRONI JÚNIOR, 999, 5º, 6º, 7º ANDAR, SÃO PAULO, SP. TELEFONE +55 11 2195 4400. WWW.ALMAPBBDO.COM.BR<br>Confidential - Not for Public Consumption or Distribution</div>',
+        '</div>'
+      ].join("");
+    }
+
+    function getSelectedItem() {
+      if (materialSelect.value === "") {
+        return null;
+      }
+
+      return materiaisAtuais[Number(materialSelect.value)] || null;
+    }
+
+    function sanitizePdfText(text) {
+      return String(text)
+        .replace(/[“”]/g, '"')
+        .replace(/[‘’]/g, "'")
+        .replace(/–|—/g, "-")
+        .replace(/\u2026/g, "...")
+        .replace(/€/g, "EUR")
+        .replace(/[^\x20-\xFF]/g, " ");
+    }
+
+    function escapePdfText(text) {
+      return sanitizePdfText(text)
+        .replace(/\\/g, "\\\\")
+        .replace(/\(/g, "\\(")
+        .replace(/\)/g, "\\)");
+    }
+
+    function buildPdfDocument(budget) {
+      const width = 595;
+      const height = 842;
+      const lines = [];
+      const red = "0.796 0.137 0.141";
+      const black = "0 0 0";
+      const white = "1 1 1";
+      const lightGray = "0.88 0.88 0.88";
+
+      function text(x, y, size, value, font, color) {
+        lines.push(color + " rg");
+        lines.push("BT");
+        lines.push("/" + font + " " + size + " Tf");
+        lines.push("1 0 0 1 " + x + " " + y + " Tm");
+        lines.push("(" + escapePdfText(value) + ") Tj");
+        lines.push("ET");
+      }
+
+      function line(x1, y1, x2, y2, color) {
+        lines.push(color + " RG");
+        lines.push("0.8 w");
+        lines.push(x1 + " " + y1 + " m");
+        lines.push(x2 + " " + y2 + " l");
+        lines.push("S");
+      }
+
+      function fillRect(x, y, w, h, color) {
+        lines.push(color + " rg");
+        lines.push(x + " " + y + " " + w + " " + h + " re f");
+      }
+
+      function rightText(rightX, y, size, value, font, color) {
+        const approxWidth = sanitizePdfText(value).length * size * 0.5;
+        text(rightX - approxWidth, y, size, value, font, color);
+      }
+
+      fillRect(40, 500, 515, 28, red);
+      fillRect(40, 432, 515, 22, red);
+      line(40, 472, 555, 472, lightGray);
+      line(40, 454, 555, 454, lightGray);
+      line(375, 528, 375, 432, lightGray);
+      line(443, 528, 443, 432, lightGray);
+
+      text(44, 785, 22, "ALMAP", "F2", black);
+      text(120, 785, 22, "BBDO", "F2", red);
+      text(375, 786, 20, "ORCAMENTO", "F2", black);
+      text(375, 768, 9, "PRODUCAO GRAFICA", "F2", black);
+
+      text(375, 675, 9, "DATA:", "F2", black);
+      text(432, 675, 9, budget.dateText, "F1", black);
+      text(375, 653, 9, "CLIENTE:", "F2", black);
+      text(432, 653, 9, budget.cliente, "F1", black);
+      text(375, 631, 9, "JOB:", "F2", black);
+      text(432, 631, 9, budget.material, "F1", black);
+
+      text(205, 510, 9, "ITENS", "F2", white);
+      text(392, 510, 9, "QTDE", "F2", white);
+      text(482, 510, 9, "VALOR", "F2", white);
+
+      text(48, 482, 10, budget.material, "F2", black);
+      text(48, 467, 8, budget.categoria, "F1", black);
+      text(407, 468, 10, String(budget.quantidade), "F1", black);
+      rightText(522, 468, 10, formatCurrency(budget.valorUnitarioComDesconto), "F1", black);
+
+      text(48, 439, 9, "TOTAL", "F2", white);
+      rightText(522, 439, 10, formatCurrency(budget.total), "F2", white);
+
+      text(40, 332, 9, "COND. PGTO.: 60 DIAS", "F2", black);
+
+      text(40, 140, 8, "ROSE RIBEIRO", "F2", black);
+      text(40, 124, 10, "ALMAP", "F2", black);
+      text(84, 124, 10, "BBDO", "F2", red);
+      text(40, 110, 7, "PRODUCAO GRAFICA", "F2", black);
+
+      text(74, 58, 6, "ALMAP BBDO, AVENIDA ROQUE PETRONI JUNIOR, 999, 5, 6, 7 ANDAR, SAO PAULO, SP. TELEFONE +55 11 2195 4400. WWW.ALMAPBBDO.COM.BR", "F1", black);
+      text(170, 48, 6, "Confidential - Not for Public Consumption or Distribution", "F1", black);
+
+      const stream = lines.join("\n");
+      const objects = [];
+      objects.push("1 0 obj << /Type /Catalog /Pages 2 0 R >> endobj");
+      objects.push("2 0 obj << /Type /Pages /Count 1 /Kids [3 0 R] >> endobj");
+      objects.push("3 0 obj << /Type /Page /Parent 2 0 R /MediaBox [0 0 " + width + " " + height + "] /Resources << /Font << /F1 4 0 R /F2 5 0 R >> >> /Contents 6 0 R >> endobj");
+      objects.push("4 0 obj << /Type /Font /Subtype /Type1 /BaseFont /Helvetica >> endobj");
+      objects.push("5 0 obj << /Type /Font /Subtype /Type1 /BaseFont /Helvetica-Bold >> endobj");
+      objects.push("6 0 obj << /Length " + stream.length + " >> stream\n" + stream + "\nendstream endobj");
+
+      let pdf = "%PDF-1.4\n";
+      const offsets = [0];
+      for (const object of objects) {
+        offsets.push(pdf.length);
+        pdf += object + "\n";
+      }
+      const xrefStart = pdf.length;
+      pdf += "xref\n0 " + (objects.length + 1) + "\n";
+      pdf += "0000000000 65535 f \n";
+      for (let index = 1; index < offsets.length; index += 1) {
+        pdf += String(offsets[index]).padStart(10, "0") + " 00000 n \n";
+      }
+      pdf += "trailer << /Size " + (objects.length + 1) + " /Root 1 0 R >>\n";
+      pdf += "startxref\n" + xrefStart + "\n%%EOF";
+
+      return new Uint8Array(Array.from(pdf, (char) => char.charCodeAt(0) & 255));
+    }
+
+    function downloadPdf() {
+      if (!currentBudget) {
+        showError("Gere um orçamento antes de exportar o PDF.");
+        return;
+      }
+
+      const bytes = buildPdfDocument(currentBudget);
+      const blob = new Blob([bytes], { type: "application/pdf" });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      const safeMaterial = currentBudget.material
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, "-")
+        .replace(/^-+|-+$/g, "")
+        .slice(0, 40) || "orcamento";
+
+      link.href = url;
+      link.download = "orcamento-bradesco-" + safeMaterial + ".pdf";
+      link.click();
+      URL.revokeObjectURL(url);
+    }
+
+    function unlockApp() {
+      sessionStorage.setItem(ACCESS_STORAGE_KEY, "ok");
+      accessGate.hidden = true;
+      appShell.hidden = false;
+      clearAccessError();
+      accessPasswordInput.value = "";
+    }
+
+    function handleAccess() {
+      clearAccessError();
+
+      if (accessPasswordInput.value !== ACCESS_PASSWORD) {
+        showAccessError("Senha incorreta.");
+        return;
+      }
+
+      unlockApp();
+    }
+
+    categoriaSelect.addEventListener("change", () => {
+      clearError();
+      showEmptyResult();
+
+      if (!categoriaSelect.value) {
+        resetMaterials();
+        return;
+      }
+
+      fillMaterials(categoriaSelect.value);
+    });
+
+    gerarButton.addEventListener("click", () => {
+      clearError();
+
+      if (!categoriaSelect.value) {
+        showError("Categoria não selecionada.");
+        showEmptyResult();
+        return;
+      }
+
+      if (!materialSelect.value) {
+        showError("Material não selecionado.");
+        showEmptyResult();
+        return;
+      }
+
+      const quantity = Number(quantidadeInput.value);
+      if (!Number.isInteger(quantity) || quantity <= 0) {
+        showError("Quantidade inválida.");
+        showEmptyResult();
+        return;
+      }
+
+      const item = getSelectedItem();
+      if (!item) {
+        showError("Material não selecionado.");
+        showEmptyResult();
+        return;
+      }
+
+      if (item.Finalizacao === null || item.Finalizacao === "") {
+        showError("Item sem valor na coluna Finalizacao.");
+        showEmptyResult();
+        return;
+      }
+
+      if (item.Desconto === null || item.Desconto === "") {
+        showError("Item sem valor na coluna Desconto.");
+        showEmptyResult();
+        return;
+      }
+
+      renderBudget(item, quantity);
+    });
+
+    limparButton.addEventListener("click", () => {
+      categoriaSelect.value = "";
+      quantidadeInput.value = "";
+      resetMaterials();
+      clearError();
+      showEmptyResult();
+    });
+
+    pdfButton.addEventListener("click", downloadPdf);
+    accessButton.addEventListener("click", handleAccess);
+    accessPasswordInput.addEventListener("keydown", (event) => {
+      if (event.key === "Enter") {
+        handleAccess();
+      }
+    });
+
+    fillCategories();
+    showEmptyResult();
+
+    if (sessionStorage.getItem(ACCESS_STORAGE_KEY) === "ok") {
+      unlockApp();
+    }
+  </script>
+</body>
+</html>
