@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Orçamento Banco Bradesco</title>
+  <title>Orçamento</title>
   <style>
     :root {
       --paper: #ffffff;
@@ -126,7 +126,7 @@
     }
 
     .controls h2 {
-      margin: 0 0 10px;
+      margin: 0 0 24px;
       font-size: 1.05rem;
       text-transform: uppercase;
       letter-spacing: 0.08em;
@@ -499,6 +499,11 @@
         <h2>Montar orçamento</h2>
 
         <div class="field">
+          <label for="nomeJob">Nome do Job</label>
+          <input id="nomeJob" type="text" placeholder="Digite o nome do job">
+        </div>
+
+        <div class="field">
           <label for="categoria">Categoria</label>
           <select id="categoria">
             <option value="">Selecione uma categoria</option>
@@ -755,6 +760,7 @@
 
     const categoriaSelect = document.getElementById("categoria");
     const materialSelect = document.getElementById("material");
+    const nomeJobInput = document.getElementById("nomeJob");
     const quantidadeInput = document.getElementById("quantidade");
     const gerarButton = document.getElementById("gerar");
     const limparButton = document.getElementById("limpar");
@@ -850,8 +856,13 @@
       materiaisAtuais = [];
     }
 
+    function hasPricingData(item) {
+      return typeof item.Finalizacao === "number" && Number.isFinite(item.Finalizacao) &&
+        typeof item.Desconto === "number" && Number.isFinite(item.Desconto);
+    }
+
     function fillMaterials(category) {
-      materiaisAtuais = rows.filter((item) => item.Categoria === category);
+      materiaisAtuais = rows.filter((item) => item.Categoria === category && hasPricingData(item));
       materialSelect.innerHTML = '<option value="">Selecione um material</option>';
 
       materiaisAtuais.forEach((item, index) => {
@@ -861,10 +872,15 @@
         materialSelect.appendChild(option);
       });
 
+      if (materiaisAtuais.length === 0) {
+        materialSelect.innerHTML = '<option value="">Nenhum material com valor disponível</option>';
+      }
+
       materialSelect.disabled = materiaisAtuais.length === 0;
     }
 
     function renderBudget(item, quantity) {
+      const nomeJob = nomeJobInput.value.trim() || item.Material;
       const valorBase = item.Finalizacao;
       const desconto = item.Desconto;
       const valorUnitarioComDesconto = valorBase * (1 - desconto);
@@ -874,6 +890,7 @@
       currentBudget = {
         dateText,
         cliente: item.Cliente,
+        nomeJob,
         categoria: item.Categoria,
         material: item.Material,
         quantidade: quantity,
@@ -891,7 +908,7 @@
         '  <table class="meta-table">',
         '    <tr><td>Data:</td><td>' + escapeHtml(dateText) + '</td></tr>',
         '    <tr><td>Cliente:</td><td>' + escapeHtml(item.Cliente) + '</td></tr>',
-        '    <tr><td>Job:</td><td>' + escapeHtml(item.Material) + '</td></tr>',
+        '    <tr><td>Job:</td><td>' + escapeHtml(nomeJob) + '</td></tr>',
         '  </table>',
         '</div>',
         '<table class="items-table">',
@@ -1003,7 +1020,7 @@
       text(375, 653, 9, "CLIENTE:", "F2", black);
       text(432, 653, 9, budget.cliente, "F1", black);
       text(375, 631, 9, "JOB:", "F2", black);
-      text(432, 631, 9, budget.material, "F1", black);
+      text(432, 631, 9, budget.nomeJob, "F1", black);
 
       text(205, 510, 9, "ITENS", "F2", white);
       text(392, 510, 9, "QTDE", "F2", white);
@@ -1064,7 +1081,7 @@
       const blob = new Blob([bytes], { type: "application/pdf" });
       const url = URL.createObjectURL(blob);
       const link = document.createElement("a");
-      const safeMaterial = currentBudget.material
+      const safeMaterial = currentBudget.nomeJob
         .toLowerCase()
         .replace(/[^a-z0-9]+/g, "-")
         .replace(/^-+|-+$/g, "")
@@ -1152,6 +1169,7 @@
     });
 
     limparButton.addEventListener("click", () => {
+      nomeJobInput.value = "";
       categoriaSelect.value = "";
       quantidadeInput.value = "";
       resetMaterials();
