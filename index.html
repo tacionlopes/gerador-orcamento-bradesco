@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -118,11 +119,11 @@
     .controls {
       position: sticky;
       top: 24px;
-      background: var(--panel);
-      border: 1px solid rgba(0, 0, 0, 0.06);
-      border-radius: 24px;
-      padding: 24px;
-      box-shadow: var(--shadow);
+      background: transparent;
+      border: 0;
+      border-radius: 0;
+      padding: 0;
+      box-shadow: none;
     }
 
     .controls h2 {
@@ -490,10 +491,6 @@
     <section class="heading">
       <div>
         <h1>Gerador de Orçamento</h1>
-        <p>
-          Layout redesenhado com base no orçamento de referência, preservando os dados reais da aba
-          <strong>ORCAMENTO</strong> da planilha.
-        </p>
       </div>
       <div class="data-count">188 itens disponíveis</div>
     </section>
@@ -943,6 +940,8 @@
 
     function sanitizePdfText(text) {
       return String(text)
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
         .replace(/[“”]/g, '"')
         .replace(/[‘’]/g, "'")
         .replace(/–|—/g, "-")
@@ -996,7 +995,6 @@
 
       fillRect(40, 500, 515, 28, red);
       fillRect(40, 432, 515, 22, red);
-      line(40, 472, 555, 472, lightGray);
       line(40, 454, 555, 454, lightGray);
       line(375, 528, 375, 432, lightGray);
       line(443, 528, 443, 432, lightGray);
@@ -1017,10 +1015,10 @@
       text(392, 510, 9, "QTDE", "F2", white);
       text(482, 510, 9, "VALOR", "F2", white);
 
-      text(48, 482, 10, budget.material, "F2", black);
-      text(48, 467, 8, budget.categoria, "F1", black);
-      text(407, 468, 10, String(budget.quantidade), "F1", black);
-      rightText(522, 468, 10, formatCurrency(budget.valorUnitarioComDesconto), "F1", black);
+      text(48, 478, 10, budget.material, "F2", black);
+      text(48, 462, 8, budget.categoria, "F1", black);
+      text(407, 470, 10, String(budget.quantidade), "F1", black);
+      rightText(522, 470, 10, formatCurrency(budget.valorUnitarioComDesconto), "F1", black);
 
       text(48, 439, 9, "TOTAL", "F2", white);
       rightText(522, 439, 10, formatCurrency(budget.total), "F2", white);
@@ -1184,3 +1182,4 @@
   </script>
 </body>
 </html>
+
