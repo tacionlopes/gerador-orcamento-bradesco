@@ -100,6 +100,11 @@
       margin: 0;
       font-size: clamp(1.8rem, 3vw, 2.8rem);
       letter-spacing: 0.04em;
+      color: var(--ink);
+    }
+
+    .heading h1 span {
+      color: var(--accent);
     }
 
     .heading p {
@@ -134,13 +139,6 @@
       box-shadow: none;
     }
 
-    .controls h2 {
-      margin: 0 0 24px;
-      font-size: 1.05rem;
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-    }
-
     .controls-copy {
       margin: 0 0 20px;
       color: var(--muted);
@@ -152,6 +150,56 @@
       display: grid;
       gap: 8px;
       margin-bottom: 16px;
+    }
+
+    .items-editor {
+      display: grid;
+      gap: 18px;
+      margin-bottom: 10px;
+    }
+
+    .quote-item {
+      padding-bottom: 18px;
+      border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+    }
+
+    .quote-item:last-child {
+      border-bottom: 0;
+      padding-bottom: 0;
+    }
+
+    .item-tools {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      margin-top: -4px;
+    }
+
+    .icon-button,
+    .remove-button {
+      border-radius: 999px;
+      font-size: 0.95rem;
+      font-weight: 700;
+      padding: 0;
+      width: 42px;
+      height: 42px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .icon-button {
+      background: #fff;
+      color: var(--accent-dark);
+      border: 1px solid rgba(151, 24, 25, 0.2);
+    }
+
+    .remove-button {
+      width: auto;
+      min-width: 42px;
+      padding: 0 14px;
+      background: #efe7da;
+      color: var(--ink);
     }
 
     label {
@@ -213,6 +261,33 @@
       background: #fff;
       color: var(--accent-dark);
       border: 1px solid rgba(151, 24, 25, 0.18);
+    }
+
+    .email-button {
+      width: 48px;
+      height: 48px;
+      padding: 0;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      line-height: 1;
+    }
+
+    .email-button svg {
+      width: 19px;
+      height: 19px;
+      display: block;
+    }
+
+    .email-button .email-icon-sent[hidden],
+    .email-button .email-icon-default[hidden] {
+      display: none;
+    }
+
+    .email-button.sent {
+      background: linear-gradient(135deg, var(--accent) 0%, var(--accent-dark) 100%);
+      color: #fff;
+      border-color: transparent;
     }
 
     .error {
@@ -498,42 +573,33 @@
   <main class="page-shell app-shell" id="appShell" hidden>
     <section class="heading">
       <div>
-        <h1>Gerador de Orçamento</h1>
+        <h1>Orçamento <span>Produção Gráfica</span></h1>
       </div>
-      <div class="data-count">188 itens disponíveis</div>
     </section>
 
     <div class="layout">
       <aside class="controls">
-        <h2>Montar orçamento</h2>
-
         <div class="field">
           <label for="nomeJob">Nome do Job</label>
           <input id="nomeJob" type="text" placeholder="Digite o nome do job">
         </div>
 
-        <div class="field">
-          <label for="categoria">Categoria</label>
-          <select id="categoria">
-            <option value="">Selecione uma categoria</option>
-          </select>
-        </div>
-
-        <div class="field">
-          <label for="material">Material</label>
-          <select id="material" disabled>
-            <option value="">Selecione um material</option>
-          </select>
-        </div>
-
-        <div class="field">
-          <label for="quantidade">Quantidade</label>
-          <input id="quantidade" type="number" min="1" step="1" placeholder="Digite a quantidade">
-        </div>
+        <div class="items-editor" id="itemsEditor"></div>
 
         <div class="actions">
           <button type="button" class="primary" id="gerar">Gerar Orçamento</button>
           <button type="button" class="ghost" id="pdf" disabled>Gerar PDF</button>
+          <button type="button" class="ghost email-button" id="email" aria-label="Enviar por e-mail" title="Enviar por e-mail" disabled>
+            <svg class="email-icon-default" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M4 6h16v12H4z"></path>
+              <path d="m4 7 8 6 8-6"></path>
+            </svg>
+            <svg class="email-icon-sent" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" hidden>
+              <path d="M3 7h13v10H3z"></path>
+              <path d="m3 8 6.5 4.8L16 8"></path>
+              <path d="m18 12 2 2 4-4"></path>
+            </svg>
+          </button>
           <button type="button" class="secondary" id="limpar">Limpar</button>
         </div>
 
@@ -568,6 +634,35 @@
   <script>
     const ACCESS_PASSWORD = "talauro01@";
     const ACCESS_STORAGE_KEY = "gerador-orcamento-bradesco-auth";
+    const CLIENT_NAMES = [
+      "AMAZON",
+      "BOEHRINGER INGELHEIM",
+      "BOTICARIO",
+      "BANCO BRADESCO",
+      "BRADESCO SEGUROS",
+      "BRF",
+      "CIELO",
+      "DIAGEO",
+      "ELMA ",
+      "ELO",
+      "GOL",
+      "HEINEKEN",
+      "IPANEMA",
+      "IPIRANGA",
+      "LIVELO",
+      "LUX COM ELETRÔNICOS DE ÓCULOS",
+      "META",
+      "OLX",
+      "ÓTICAS CAROL",
+      "PIRACANJUBA",
+      "PPM",
+      "VW",
+      "VW CAMINHÕES ",
+      "WHATSAPP",
+      "YAMAHA",
+      "ZAMP"
+    ];
+    const DELIVERY_EMAIL = "rose.pg@omc.com";
     const EMBEDDED_ROWS = [
       ["BANCO BRADESCO","Advertising - Anúncio Revista","Página Dupla",4933.2,0.5],
       ["BANCO BRADESCO","Advertising - Anúncio Revista","1 Página",3446.11,0.5],
@@ -767,13 +862,12 @@
       Desconto
     }));
 
-    const categoriaSelect = document.getElementById("categoria");
-    const materialSelect = document.getElementById("material");
+    const itemsEditor = document.getElementById("itemsEditor");
     const nomeJobInput = document.getElementById("nomeJob");
-    const quantidadeInput = document.getElementById("quantidade");
     const gerarButton = document.getElementById("gerar");
     const limparButton = document.getElementById("limpar");
     const pdfButton = document.getElementById("pdf");
+    const emailButton = document.getElementById("email");
     const accessGate = document.getElementById("accessGate");
     const appShell = document.getElementById("appShell");
     const accessPasswordInput = document.getElementById("accessPassword");
@@ -782,8 +876,9 @@
     const erro = document.getElementById("erro");
     const resultado = document.getElementById("resultado");
     const statusPreview = document.getElementById("statusPreview");
+    const emailDefaultIcon = emailButton.querySelector(".email-icon-default");
+    const emailSentIcon = emailButton.querySelector(".email-icon-sent");
 
-    let materiaisAtuais = [];
     let currentBudget = null;
 
     function formatCurrency(value) {
@@ -837,13 +932,31 @@
     function showEmptyResult() {
       currentBudget = null;
       pdfButton.disabled = true;
+      emailButton.disabled = true;
+      resetEmailSentState();
       setPreviewStatus("Aguardando seleção.");
       resultado.innerHTML = [
         '<p class="placeholder">',
-        'Selecione a categoria, escolha o material, informe a quantidade e clique em ',
+        'Selecione as categorias, escolha os materiais, informe as quantidades e clique em ',
         '<strong>Gerar Orçamento</strong> para montar a folha.',
         "</p>"
       ].join("");
+    }
+
+    function resetEmailSentState() {
+      emailButton.classList.remove("sent");
+      emailButton.setAttribute("aria-label", "Enviar por e-mail");
+      emailButton.setAttribute("title", "Enviar por e-mail");
+      emailDefaultIcon.hidden = false;
+      emailSentIcon.hidden = true;
+    }
+
+    function markEmailSentState() {
+      emailButton.classList.add("sent");
+      emailButton.setAttribute("aria-label", "E-mail enviado");
+      emailButton.setAttribute("title", "E-mail enviado");
+      emailDefaultIcon.hidden = true;
+      emailSentIcon.hidden = false;
     }
 
     function uniqueCategories(list) {
@@ -851,18 +964,7 @@
     }
 
     function fillCategories() {
-      uniqueCategories(rows).forEach((category) => {
-        const option = document.createElement("option");
-        option.value = category;
-        option.textContent = category;
-        categoriaSelect.appendChild(option);
-      });
-    }
-
-    function resetMaterials() {
-      materialSelect.innerHTML = '<option value="">Selecione um material</option>';
-      materialSelect.disabled = true;
-      materiaisAtuais = [];
+      return uniqueCategories(rows);
     }
 
     function hasPricingData(item) {
@@ -870,53 +972,203 @@
         typeof item.Desconto === "number" && Number.isFinite(item.Desconto);
     }
 
-    function fillMaterials(category) {
-      materiaisAtuais = rows.filter((item) => item.Categoria === category && hasPricingData(item));
-      materialSelect.innerHTML = '<option value="">Selecione um material</option>';
-
-      materiaisAtuais.forEach((item, index) => {
-        const option = document.createElement("option");
-        option.value = String(index);
-        option.textContent = item.Material;
-        materialSelect.appendChild(option);
-      });
-
-      if (materiaisAtuais.length === 0) {
-        materialSelect.innerHTML = '<option value="">Nenhum material com valor disponível</option>';
-      }
-
-      materialSelect.disabled = materiaisAtuais.length === 0;
+    function buildClientOptions(selectedClient = "") {
+      return [
+        '<option value="">Selecione um cliente</option>',
+        ...CLIENT_NAMES.map((client) => (
+          '<option value="' + escapeHtml(client) + '"' +
+          (client === selectedClient ? " selected" : "") +
+          ">" + escapeHtml(client) + "</option>"
+        ))
+      ].join("");
     }
 
-    function renderBudget(item, quantity) {
-      const nomeJob = nomeJobInput.value.trim() || item.Material;
-      const valorBase = item.Finalizacao;
-      const desconto = item.Desconto;
-      const valorUnitarioComDesconto = valorBase * (1 - desconto);
-      const total = valorUnitarioComDesconto * quantity;
+    function buildCategoryOptions(selectedCategory = "") {
+      return [
+        '<option value="">Selecione uma categoria</option>',
+        ...fillCategories().map((category) => (
+          '<option value="' + escapeHtml(category) + '"' +
+          (category === selectedCategory ? " selected" : "") +
+          ">" + escapeHtml(category) + "</option>"
+        ))
+      ].join("");
+    }
+
+    function getMaterialsForCategory(category) {
+      return rows.filter((item) => item.Categoria === category && hasPricingData(item));
+    }
+
+    function buildMaterialOptions(category, selectedMaterial = "") {
+      const materials = getMaterialsForCategory(category);
+      if (!category) {
+        return '<option value="">Selecione um material</option>';
+      }
+      if (!materials.length) {
+        return '<option value="">Nenhum material com valor disponível</option>';
+      }
+      return [
+        '<option value="">Selecione um material</option>',
+        ...materials.map((item) => (
+          '<option value="' + escapeHtml(item.Material) + '"' +
+          (item.Material === selectedMaterial ? " selected" : "") +
+          ">" + escapeHtml(item.Material) + "</option>"
+        ))
+      ].join("");
+    }
+
+    function createItemBlock(index, data = {}) {
+      const block = document.createElement("section");
+      const client = data.client || "";
+      const category = data.category || "";
+      const material = data.material || "";
+      const quantity = data.quantity || "";
+
+      block.className = "quote-item";
+      block.dataset.itemIndex = String(index);
+      block.innerHTML = [
+        '<div class="field">',
+        '  <label>Cliente</label>',
+        '  <select class="cliente-select">',
+             buildClientOptions(client),
+        '  </select>',
+        '</div>',
+        '<div class="field">',
+        '  <label>Categoria</label>',
+        '  <select class="categoria-select">',
+             buildCategoryOptions(category),
+        '  </select>',
+        '</div>',
+        '<div class="field">',
+        '  <label>Material</label>',
+        '  <select class="material-select"' + (category ? "" : " disabled") + '>',
+             buildMaterialOptions(category, material),
+        '  </select>',
+        '</div>',
+        '<div class="field">',
+        '  <label>Quantidade</label>',
+        '  <input class="quantidade-input" type="number" min="1" step="1" placeholder="Digite a quantidade" value="' + escapeHtml(quantity) + '">',
+        '</div>',
+        '<div class="item-tools">',
+        '  <button type="button" class="icon-button add-item-button" aria-label="Adicionar item">+</button>',
+            index > 0 ? '  <button type="button" class="remove-button remove-item-button">Remover</button>' : "",
+        '</div>'
+      ].join("");
+
+      return block;
+    }
+
+    function refreshItemControls() {
+      const blocks = [...itemsEditor.querySelectorAll(".quote-item")];
+      blocks.forEach((block, index) => {
+        block.dataset.itemIndex = String(index);
+        const removeButton = block.querySelector(".remove-item-button");
+        if (removeButton) {
+          removeButton.hidden = blocks.length === 1;
+        }
+      });
+    }
+
+    function addItemBlock(data = {}) {
+      itemsEditor.appendChild(createItemBlock(itemsEditor.children.length, data));
+      refreshItemControls();
+    }
+
+    function resetItemBlocks() {
+      itemsEditor.innerHTML = "";
+      addItemBlock();
+    }
+
+    function syncMaterialOptions(block) {
+      const categorySelect = block.querySelector(".categoria-select");
+      const materialSelect = block.querySelector(".material-select");
+      const previousValue = materialSelect.value;
+      materialSelect.innerHTML = buildMaterialOptions(categorySelect.value, previousValue);
+      materialSelect.disabled = !categorySelect.value || !getMaterialsForCategory(categorySelect.value).length;
+      if (![...materialSelect.options].some((option) => option.value === previousValue)) {
+        materialSelect.value = "";
+      }
+    }
+
+    function getBudgetItems() {
+      const blocks = [...itemsEditor.querySelectorAll(".quote-item")];
+      const items = [];
+
+      for (const [index, block] of blocks.entries()) {
+        const client = block.querySelector(".cliente-select").value;
+        const category = block.querySelector(".categoria-select").value;
+        const material = block.querySelector(".material-select").value;
+        const quantity = Number(block.querySelector(".quantidade-input").value);
+
+        if (!client) {
+          throw new Error("Cliente não selecionado no item " + (index + 1) + ".");
+        }
+
+        if (!category) {
+          throw new Error("Categoria não selecionada no item " + (index + 1) + ".");
+        }
+
+        if (!material) {
+          throw new Error("Material não selecionado no item " + (index + 1) + ".");
+        }
+
+        if (!Number.isInteger(quantity) || quantity <= 0) {
+          throw new Error("Quantidade inválida no item " + (index + 1) + ".");
+        }
+
+        const item = getMaterialsForCategory(category).find((row) => row.Material === material);
+        if (!item) {
+          throw new Error("Material não selecionado no item " + (index + 1) + ".");
+        }
+
+        if (item.Finalizacao === null || item.Finalizacao === "") {
+          throw new Error("Item sem valor na coluna Finalizacao no item " + (index + 1) + ".");
+        }
+
+        if (item.Desconto === null || item.Desconto === "") {
+          throw new Error("Item sem valor na coluna Desconto no item " + (index + 1) + ".");
+        }
+
+        const valorUnitarioComDesconto = item.Finalizacao * (1 - item.Desconto);
+        items.push({
+          cliente: client,
+          categoria: item.Categoria,
+          clienteCategoria: client + " - " + item.Categoria,
+          material: item.Material,
+          quantidade: quantity,
+          valorBase: item.Finalizacao,
+          desconto: item.Desconto,
+          valorUnitarioComDesconto,
+          total: valorUnitarioComDesconto * quantity
+        });
+      }
+
+      return items;
+    }
+
+    function renderBudget(items) {
+      const nomeJob = nomeJobInput.value.trim() || items[0].material;
+      const cliente = [...new Set(items.map((item) => item.cliente))].join(", ");
       const dateText = formatDate(new Date());
+      const total = items.reduce((sum, item) => sum + item.total, 0);
 
       currentBudget = {
         dateText,
-        cliente: item.Cliente,
+        cliente,
         nomeJob,
-        categoria: item.Categoria,
-        material: item.Material,
-        quantidade: quantity,
-        valorBase,
-        desconto,
-        valorUnitarioComDesconto,
+        items,
         total
       };
 
       pdfButton.disabled = false;
+      emailButton.disabled = false;
+      resetEmailSentState();
       setPreviewStatus("Orçamento pronto para exportação.");
 
       resultado.innerHTML = [
         '<div class="meta-grid">',
         '  <table class="meta-table">',
         '    <tr><td>Data:</td><td>' + escapeHtml(dateText) + '</td></tr>',
-        '    <tr><td>Cliente:</td><td>' + escapeHtml(item.Cliente) + '</td></tr>',
+        '    <tr><td>Cliente:</td><td>' + escapeHtml(cliente) + '</td></tr>',
         '    <tr><td>Job:</td><td>' + escapeHtml(nomeJob) + '</td></tr>',
         '  </table>',
         '</div>',
@@ -929,11 +1181,13 @@
         '    </tr>',
         '  </thead>',
         '  <tbody>',
-        '    <tr>',
-        '      <td class="item-cell"><strong>' + escapeHtml(item.Material) + '</strong><small>' + escapeHtml(item.Categoria) + '</small></td>',
-        '      <td class="center">' + escapeHtml(String(quantity)) + '</td>',
-        '      <td class="right">' + escapeHtml(formatCurrency(valorUnitarioComDesconto)) + '</td>',
-        '    </tr>',
+             items.map((item) => [
+               '    <tr>',
+               '      <td class="item-cell"><strong>' + escapeHtml(item.material) + '</strong><small>' + escapeHtml(item.clienteCategoria) + '</small></td>',
+               '      <td class="center">' + escapeHtml(String(item.quantidade)) + '</td>',
+               '      <td class="right">' + escapeHtml(formatCurrency(item.total)) + '</td>',
+               '    </tr>'
+             ].join("")).join(""),
         '  </tbody>',
         '  <tfoot>',
         '    <tr>',
@@ -948,14 +1202,6 @@
         '  <div class="disclaimer">ALMAP BBDO, AVENIDA ROQUE PETRONI JÚNIOR, 999, 5º, 6º, 7º ANDAR, SÃO PAULO, SP. TELEFONE +55 11 2195 4400. WWW.ALMAPBBDO.COM.BR<br>Confidential - Not for Public Consumption or Distribution</div>',
         '</div>'
       ].join("");
-    }
-
-    function getSelectedItem() {
-      if (materialSelect.value === "") {
-        return null;
-      }
-
-      return materiaisAtuais[Number(materialSelect.value)] || null;
     }
 
     function sanitizePdfText(text) {
@@ -1013,11 +1259,17 @@
         text(rightX - approxWidth, y, size, value, font, color);
       }
 
+      const bodyStartY = 478;
+      const rowHeight = 34;
+      const totalRectY = 462 - (budget.items.length * rowHeight);
+      const totalTopY = totalRectY + 22;
+      const paymentY = Math.max(totalRectY - 92, 185);
+
       fillRect(40, 500, 515, 28, red);
-      fillRect(40, 432, 515, 22, red);
-      line(40, 454, 555, 454, lightGray);
-      line(375, 528, 375, 432, lightGray);
-      line(443, 528, 443, 432, lightGray);
+      fillRect(40, totalRectY, 515, 22, red);
+      line(40, totalTopY, 555, totalTopY, lightGray);
+      line(375, 528, 375, totalRectY, lightGray);
+      line(443, 528, 443, totalRectY, lightGray);
 
       text(44, 785, 22, "ALMAP", "F2", black);
       text(120, 785, 22, "BBDO", "F2", red);
@@ -1035,15 +1287,18 @@
       text(392, 510, 9, "QTDE", "F2", white);
       text(482, 510, 9, "VALOR", "F2", white);
 
-      text(48, 478, 10, budget.material, "F2", black);
-      text(48, 462, 8, budget.categoria, "F1", black);
-      text(407, 470, 10, String(budget.quantidade), "F1", black);
-      rightText(522, 470, 10, formatCurrency(budget.valorUnitarioComDesconto), "F1", black);
+      budget.items.forEach((item, index) => {
+        const itemY = bodyStartY - (index * rowHeight);
+        text(48, itemY, 10, item.material, "F2", black);
+        text(48, itemY - 16, 8, item.clienteCategoria, "F1", black);
+        text(407, itemY - 8, 10, String(item.quantidade), "F1", black);
+        rightText(522, itemY - 8, 10, formatCurrency(item.total), "F1", black);
+      });
 
-      text(48, 439, 9, "TOTAL", "F2", white);
-      rightText(522, 439, 10, formatCurrency(budget.total), "F2", white);
+      text(48, totalRectY + 7, 9, "TOTAL", "F2", white);
+      rightText(522, totalRectY + 7, 10, formatCurrency(budget.total), "F2", white);
 
-      text(40, 332, 9, "COND. PGTO.: 60 DIAS", "F2", black);
+      text(40, paymentY, 9, "COND. PGTO.: 60 DIAS", "F2", black);
 
       text(40, 140, 8, "ROSE RIBEIRO", "F2", black);
       text(40, 124, 10, "ALMAP", "F2", black);
@@ -1080,26 +1335,72 @@
       return new Uint8Array(Array.from(pdf, (char) => char.charCodeAt(0) & 255));
     }
 
+    function getPdfExportData() {
+      const bytes = buildPdfDocument(currentBudget);
+      const blob = new Blob([bytes], { type: "application/pdf" });
+      const safeMaterial = currentBudget.nomeJob
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, "-")
+        .replace(/^-+|-+$/g, "")
+        .slice(0, 40) || "orcamento";
+      const filename = "orcamento-bradesco-" + safeMaterial + ".pdf";
+
+      return { bytes, blob, filename };
+    }
+
     function downloadPdf() {
       if (!currentBudget) {
         showError("Gere um orçamento antes de exportar o PDF.");
         return;
       }
 
-      const bytes = buildPdfDocument(currentBudget);
-      const blob = new Blob([bytes], { type: "application/pdf" });
+      const { blob, filename } = getPdfExportData();
       const url = URL.createObjectURL(blob);
       const link = document.createElement("a");
-      const safeMaterial = currentBudget.nomeJob
-        .toLowerCase()
-        .replace(/[^a-z0-9]+/g, "-")
-        .replace(/^-+|-+$/g, "")
-        .slice(0, 40) || "orcamento";
 
       link.href = url;
-      link.download = "orcamento-bradesco-" + safeMaterial + ".pdf";
+      link.download = filename;
       link.click();
       URL.revokeObjectURL(url);
+    }
+
+    async function sendByEmail() {
+      if (!currentBudget) {
+        showError("Gere um orçamento antes de enviar por e-mail.");
+        return;
+      }
+
+      const { blob, filename } = getPdfExportData();
+
+      if (typeof File !== "undefined" && navigator.share && navigator.canShare) {
+        const pdfFile = new File([blob], filename, { type: "application/pdf" });
+        if (navigator.canShare({ files: [pdfFile] })) {
+          try {
+            await navigator.share({
+              files: [pdfFile],
+              title: "Orçamento",
+              text: "Enviar orçamento para " + DELIVERY_EMAIL
+            });
+            markEmailSentState();
+            setPreviewStatus("PDF compartilhado com sucesso.");
+            return;
+          } catch (error) {
+            if (error && error.name === "AbortError") {
+              return;
+            }
+          }
+        }
+      }
+
+      downloadPdf();
+      const subject = encodeURIComponent("Orçamento Produção Gráfica - " + currentBudget.nomeJob);
+      const body = encodeURIComponent(
+        "Segue o PDF do orçamento.\n\n" +
+        "Destinatário: " + DELIVERY_EMAIL + "\n" +
+        "O arquivo foi baixado automaticamente para anexo."
+      );
+      window.location.href = "mailto:" + DELIVERY_EMAIL + "?subject=" + subject + "&body=" + body;
+      setPreviewStatus("Rascunho de e-mail aberto. Anexe o PDF baixado para enviar.");
     }
 
     function unlockApp() {
@@ -1121,72 +1422,60 @@
       unlockApp();
     }
 
-    categoriaSelect.addEventListener("change", () => {
-      clearError();
-      showEmptyResult();
-
-      if (!categoriaSelect.value) {
-        resetMaterials();
+    itemsEditor.addEventListener("change", (event) => {
+      const categorySelect = event.target.closest(".categoria-select");
+      if (!categorySelect) {
         return;
       }
 
-      fillMaterials(categoriaSelect.value);
+      clearError();
+      showEmptyResult();
+      syncMaterialOptions(categorySelect.closest(".quote-item"));
+    });
+
+    itemsEditor.addEventListener("input", () => {
+      clearError();
+      showEmptyResult();
+    });
+
+    itemsEditor.addEventListener("click", (event) => {
+      const addButton = event.target.closest(".add-item-button");
+      if (addButton) {
+        clearError();
+        addItemBlock();
+        return;
+      }
+
+      const removeButton = event.target.closest(".remove-item-button");
+      if (removeButton) {
+        removeButton.closest(".quote-item").remove();
+        refreshItemControls();
+        clearError();
+        showEmptyResult();
+      }
     });
 
     gerarButton.addEventListener("click", () => {
       clearError();
-
-      if (!categoriaSelect.value) {
-        showError("Categoria não selecionada.");
+      try {
+        renderBudget(getBudgetItems());
+      } catch (error) {
+        showError(error.message);
         showEmptyResult();
-        return;
       }
-
-      if (!materialSelect.value) {
-        showError("Material não selecionado.");
-        showEmptyResult();
-        return;
-      }
-
-      const quantity = Number(quantidadeInput.value);
-      if (!Number.isInteger(quantity) || quantity <= 0) {
-        showError("Quantidade inválida.");
-        showEmptyResult();
-        return;
-      }
-
-      const item = getSelectedItem();
-      if (!item) {
-        showError("Material não selecionado.");
-        showEmptyResult();
-        return;
-      }
-
-      if (item.Finalizacao === null || item.Finalizacao === "") {
-        showError("Item sem valor na coluna Finalizacao.");
-        showEmptyResult();
-        return;
-      }
-
-      if (item.Desconto === null || item.Desconto === "") {
-        showError("Item sem valor na coluna Desconto.");
-        showEmptyResult();
-        return;
-      }
-
-      renderBudget(item, quantity);
     });
 
     limparButton.addEventListener("click", () => {
       nomeJobInput.value = "";
-      categoriaSelect.value = "";
-      quantidadeInput.value = "";
-      resetMaterials();
+      resetItemBlocks();
       clearError();
       showEmptyResult();
     });
 
     pdfButton.addEventListener("click", downloadPdf);
+    emailButton.addEventListener("click", () => {
+      sendByEmail();
+    });
     accessButton.addEventListener("click", handleAccess);
     accessPasswordInput.addEventListener("keydown", (event) => {
       if (event.key === "Enter") {
@@ -1194,7 +1483,7 @@
       }
     });
 
-    fillCategories();
+    resetItemBlocks();
     showEmptyResult();
 
     if (sessionStorage.getItem(ACCESS_STORAGE_KEY) === "ok") {
